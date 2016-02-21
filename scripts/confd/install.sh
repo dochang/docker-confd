@@ -9,7 +9,7 @@ confd_src_dir=${prefix}/src/confd
 go_root=${prefix}/go
 
 # Install confd build dependencies.
-apk add --update-cache --virtual confd-dependencies bash git
+apk add --no-cache --virtual confd-dependencies bash git
 
 # Download confd source code.
 git clone --branch "${CONFD_VERSION}" https://github.com/kelseyhightower/confd.git "${confd_src_dir}"
