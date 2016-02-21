@@ -22,11 +22,11 @@ cd "${confd_src_dir}/src/github.com/kelseyhightower/confd"
 go build -a -installsuffix nocgo .
 
 # Install confd.
-cd "${confd_src_dir}/src/github.com/kelseyhightower/confd"
 install -c confd "${prefix}/bin/confd"
-
-# Delete confd build dependencies.
-apk del --purge confd-dependencies
+cd /
 
 # Remove confd source repo
 rm -rf "${confd_src_dir}"
+
+# Delete confd build dependencies.
+apk del --purge confd-dependencies
