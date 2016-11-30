@@ -2,31 +2,32 @@
 
 set -ex
 
-export CONFD_VERSION=v0.11.0
+# We can't use v0.12.1, since [this commit][1] is behind v0.12.1
+#
+# [1]: bacongobbler/confd@e464ce60793c0572626cc468ce681864d363ac3c
+export CONFD_VERSION=master
 
-prefix=/usr/local
-confd_src_dir=${prefix}/src/confd
-go_root=${prefix}/go
+export GOPATH=/go
+export PATH=$GOPATH/bin:/usr/local/go/bin:$PATH
 
 # Install confd build dependencies.
 apk add --no-cache --virtual confd-dependencies bash git
 
-# Download confd source code.
-git clone --branch "${CONFD_VERSION}" https://github.com/kelseyhightower/confd.git "${confd_src_dir}"
+mkdir -p "${GOPATH}/src" "${GOPATH}/bin"
 
-# Build confd.
-export GOPATH="${confd_src_dir}/vendor:${confd_src_dir}"
-export PATH="${go_root}/bin:${PATH}"
+# Download confd source code.
+pkgroot=github.com/bacongobbler/confd
+git clone --branch "${CONFD_VERSION}" https://${pkgroot}.git "${GOPATH}/src/${pkgroot}"
 export CGO_ENABLED=0
-cd "${confd_src_dir}/src/github.com/kelseyhightower/confd"
-go build -a -installsuffix nocgo .
+go get -a -installsuffix nocgo ${pkgroot}
 
 # Install confd.
-install -c confd "${prefix}/bin/confd"
+cd "${GOPATH}/bin"
+install -c confd /usr/local/bin
 cd /
 
 # Remove confd source repo
-rm -rf "${confd_src_dir}"
+rm -rf "${GOPATH}" /usr/local/go/pkg/linux_amd64_nocgo
 
 # Delete confd build dependencies.
 apk del --purge confd-dependencies
